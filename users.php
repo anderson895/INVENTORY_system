@@ -197,14 +197,6 @@ $('#frmAddUser').on('submit', function(e) {
           location.reload();
         }, 2000);
       }
-    },
-    error: function(xhr, status, error) {
-      console.error('AJAX Error:', error);
-      Swal.fire({
-        icon: 'error',
-        title: 'Request Failed',
-        text: 'An error occurred while adding the user.',
-      });
     }
   });
 });
@@ -239,6 +231,8 @@ $('.btn-edit').on('click', function() {
     }
   });
 });
+
+
 
 
 /* ==================== EDIT USER - SUBMIT ==================== */

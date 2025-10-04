@@ -164,7 +164,103 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
             }
             exit;
-        }
+        }else if ($_POST['requestType'] == 'add_product') {
+                $req_fields = array('product-title', 'product-categorie', 'product-quantity', 'buying-price', 'selling-price');
+                validate_fields($req_fields);
+
+                if (empty($errors)) {
+                    $p_name = remove_junk($db->escape($_POST['product-title']));
+                    $p_cat  = remove_junk($db->escape($_POST['product-categorie']));
+                    $p_qty  = remove_junk($db->escape($_POST['product-quantity']));
+                    $p_buy  = remove_junk($db->escape($_POST['buying-price']));
+                    $p_sale = remove_junk($db->escape($_POST['selling-price']));
+
+                    // Handle optional product photo
+                    if (empty($_POST['product-photo'])) {
+                        $media_id = 0;
+                    } else {
+                        $media_id = remove_junk($db->escape($_POST['product-photo']));
+                    }
+
+                    $date = make_date();
+
+                    $query  = "INSERT INTO products (";
+                    $query .= "name, quantity, buy_price, sale_price, categorie_id, media_id, date";
+                    $query .= ") VALUES (";
+                    $query .= " '{$p_name}', '{$p_qty}', '{$p_buy}', '{$p_sale}', '{$p_cat}', '{$media_id}', '{$date}'";
+                    $query .= ")";
+                    $query .= " ON DUPLICATE KEY UPDATE name='{$p_name}'";
+
+                    if ($db->query($query)) {
+                        echo json_encode([
+                            'status' => 200,
+                            'message' => 'Product added successfully!'
+                        ]);
+                    } else {
+                        echo json_encode([
+                            'status' => 400,
+                            'message' => 'Failed to add product. Please try again.'
+                        ]);
+                    }
+                } else {
+                    echo json_encode([
+                        'status' => 400,
+                        'message' => implode(', ', $errors)
+                    ]);
+                }
+                exit;
+            }else if ($_POST['requestType'] == 'update_product') {
+                $req_fields = array('product-id', 'product-title', 'product-categorie', 'product-quantity', 'buying-price', 'selling-price');
+                validate_fields($req_fields);
+
+                if (empty($errors)) {
+                    $p_id   = (int)$_POST['product-id'];
+                    $p_name = remove_junk($db->escape($_POST['product-title']));
+                    $p_cat  = (int)$_POST['product-categorie'];
+                    $p_qty  = remove_junk($db->escape($_POST['product-quantity']));
+                    $p_buy  = remove_junk($db->escape($_POST['buying-price']));
+                    $p_sale = remove_junk($db->escape($_POST['selling-price']));
+
+                    // Handle optional product photo
+                    if (empty($_POST['product-photo'])) {
+                        $media_id = 0;
+                    } else {
+                        $media_id = remove_junk($db->escape($_POST['product-photo']));
+                    }
+
+                    $query  = "UPDATE products SET ";
+                    $query .= "name='{$p_name}', ";
+                    $query .= "quantity='{$p_qty}', ";
+                    $query .= "buy_price='{$p_buy}', ";
+                    $query .= "sale_price='{$p_sale}', ";
+                    $query .= "categorie_id='{$p_cat}', ";
+                    $query .= "media_id='{$media_id}' ";
+                    $query .= "WHERE id='{$p_id}'";
+
+                    $result = $db->query($query);
+
+                    if ($result && $db->affected_rows() >= 0) {
+                        echo json_encode([
+                            'status' => 200,
+                            'message' => 'Product updated successfully!'
+                        ]);
+                    } else {
+                        echo json_encode([
+                            'status' => 400,
+                            'message' => 'No changes made or update failed.'
+                        ]);
+                    }
+                } else {
+                    echo json_encode([
+                        'status' => 400,
+                        'message' => implode(', ', $errors)
+                    ]);
+                }
+
+                exit;
+            }
+
+
 
 
 
@@ -184,6 +280,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 echo json_encode(['status' => 200, 'user' => $user]);
             } else {
                 echo json_encode(['status' => 404, 'message' => 'User not found.']);
+            }
+            exit;
+        }else if ($_GET['requestType'] == 'get_product' && isset($_GET['id'])) {
+            $product = find_by_id('products', (int)$_GET['id']);
+            $all_categories = find_all('categories');
+            $all_photo = find_all('media');
+
+            if ($product) {
+                echo json_encode([
+                    'status' => 200,
+                    'product' => $product,
+                    'all_categories' => $all_categories,
+                    'all_photo' => $all_photo
+                ]);
+            } else {
+                echo json_encode([
+                    'status' => 404,
+                    'message' => 'Product not found.'
+                ]);
             }
             exit;
         }else{
