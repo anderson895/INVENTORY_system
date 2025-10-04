@@ -20,8 +20,7 @@ Password: user
 
 
 
-REVISION
-
+REVISIONS
 • Lalagyan ng graph sa dashboard
 • Gagawin modal
 • Lalagyan ng Searching features or sorting 
