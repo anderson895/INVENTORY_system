@@ -1,5 +1,16 @@
 <?php
 require_once('includes/load.php');
+
+require_once 'vendor/autoload.php';
+
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\RoundBlockSizeMode;
+use Endroid\QrCode\Color\Color;
+
+
 // page_require_level(1);
 header('Content-Type: application/json');
 
@@ -12,7 +23,133 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     /* ==================== ADD GROUP ==================== */
-    if ($_POST['requestType'] == 'Add_group') {
+        if ($_POST['requestType'] == 'add_product') {
+                
+
+            $req_fields = array('product-title', 'product-categorie', 'product-quantity', 'buying-price', 'selling-price');
+            validate_fields($req_fields);
+
+            $p_name   = remove_junk($db->escape($_POST['product-title']));
+            $p_cat    = remove_junk($db->escape($_POST['product-categorie']));
+            $p_qty    = remove_junk($db->escape($_POST['product-quantity']));
+            $p_buy    = remove_junk($db->escape($_POST['buying-price']));
+            $p_sale   = remove_junk($db->escape($_POST['selling-price']));
+            $media_id = empty($_POST['product-photo']) ? 0 : remove_junk($db->escape($_POST['product-photo']));
+            $date     = make_date();
+
+            // Insert product
+            $query  = "INSERT INTO products (name, quantity, buy_price, sale_price, categorie_id, media_id, date) ";
+            $query .= "VALUES ('{$p_name}', '{$p_qty}', '{$p_buy}', '{$p_sale}', '{$p_cat}', '{$media_id}', '{$date}')";
+
+            if ($db->query($query)) {
+                $product_id = $db->insert_id();
+
+                // --- Generate QR code (Endroid v6) using named arguments ---
+                $qrDir = __DIR__ . '/qr_codes/';
+                if (!is_dir($qrDir)) mkdir($qrDir, 0755, true);
+
+                $qrCode = new QrCode(
+                    data: (string)$product_id,
+                    encoding: new Encoding('UTF-8'),
+                    errorCorrectionLevel: ErrorCorrectionLevel::High,
+                    size: 300,
+                    margin: 10,
+                    roundBlockSizeMode: RoundBlockSizeMode::Margin,
+                    foregroundColor: new Color(0, 0, 0),
+                    backgroundColor: new Color(255, 255, 255)
+                );
+
+                $writer = new PngWriter();
+                $result = $writer->write($qrCode);
+
+                $qrPath = $qrDir . $product_id . '.png';
+                $result->saveToFile($qrPath);
+
+                echo json_encode([
+                    'status'  => 200,
+                    'message' => 'Product added successfully!',
+                    'qr_code' => 'qr_codes/' . $product_id . '.png'
+                ]);
+            } else {
+                echo json_encode([
+                    'status'  => 400,
+                    'message' => 'Failed to add product. Please try again.'
+                ]);
+            }
+        }else if ($_POST['requestType'] == 'update_product') {
+                $req_fields = array('product-id', 'product-title', 'product-categorie', 'product-quantity', 'buying-price', 'selling-price');
+                validate_fields($req_fields);
+
+                if (empty($errors)) {
+                    $p_id   = (int)$_POST['product-id'];
+                    $p_name = remove_junk($db->escape($_POST['product-title']));
+                    $p_cat  = (int)$_POST['product-categorie'];
+                    $p_qty  = remove_junk($db->escape($_POST['product-quantity']));
+                    $p_buy  = remove_junk($db->escape($_POST['buying-price']));
+                    $p_sale = remove_junk($db->escape($_POST['selling-price']));
+
+                    // Optional product photo
+                    $media_id = empty($_POST['product-photo']) ? 0 : remove_junk($db->escape($_POST['product-photo']));
+
+                    // Update product in DB
+                    $query  = "UPDATE products SET ";
+                    $query .= "name='{$p_name}', ";
+                    $query .= "quantity='{$p_qty}', ";
+                    $query .= "buy_price='{$p_buy}', ";
+                    $query .= "sale_price='{$p_sale}', ";
+                    $query .= "categorie_id='{$p_cat}', ";
+                    $query .= "media_id='{$media_id}' ";
+                    $query .= "WHERE id='{$p_id}'";
+
+                    $result = $db->query($query);
+
+                    if ($result && $db->affected_rows() >= 0) {
+                        // --- Generate or replace QR code ---
+                        $qrDir = __DIR__ . '/qr_codes/';
+                        if (!is_dir($qrDir)) mkdir($qrDir, 0755, true);
+
+                        $qrPath = $qrDir . $p_id . '.png';
+
+                        $qrCode = new QrCode(
+                            data: (string)$p_id,
+                            encoding: new Encoding('UTF-8'),
+                            errorCorrectionLevel: ErrorCorrectionLevel::High,
+                            size: 300,
+                            margin: 10,
+                            roundBlockSizeMode: RoundBlockSizeMode::Margin,
+                            foregroundColor: new Color(0, 0, 0),
+                            backgroundColor: new Color(255, 255, 255)
+                        );
+
+                        $writer = new PngWriter();
+                        $resultQR = $writer->write($qrCode);
+
+                        // Save QR code (overwrite if exists)
+                        $resultQR->saveToFile($qrPath);
+
+                        echo json_encode([
+                            'status' => 200,
+                            'message' => 'Product updated successfully!',
+                            'qr_code' => 'qr_codes/' . $p_id . '.png'
+                        ]);
+                    } else {
+                        echo json_encode([
+                            'status' => 400,
+                            'message' => 'No changes made or update failed.'
+                        ]);
+                    }
+                } else {
+                    echo json_encode([
+                        'status' => 400,
+                        'message' => implode(', ', $errors)
+                    ]);
+                }
+
+                exit;
+    }
+    /* ==================== ADD GROUP ==================== */
+    
+    else if ($_POST['requestType'] == 'Add_group') {
         $req_fields = array('group-name','group-level');
         validate_fields($req_fields);
 
@@ -164,101 +301,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
             }
             exit;
-        }else if ($_POST['requestType'] == 'add_product') {
-                $req_fields = array('product-title', 'product-categorie', 'product-quantity', 'buying-price', 'selling-price');
-                validate_fields($req_fields);
-
-                if (empty($errors)) {
-                    $p_name = remove_junk($db->escape($_POST['product-title']));
-                    $p_cat  = remove_junk($db->escape($_POST['product-categorie']));
-                    $p_qty  = remove_junk($db->escape($_POST['product-quantity']));
-                    $p_buy  = remove_junk($db->escape($_POST['buying-price']));
-                    $p_sale = remove_junk($db->escape($_POST['selling-price']));
-
-                    // Handle optional product photo
-                    if (empty($_POST['product-photo'])) {
-                        $media_id = 0;
-                    } else {
-                        $media_id = remove_junk($db->escape($_POST['product-photo']));
-                    }
-
-                    $date = make_date();
-
-                    $query  = "INSERT INTO products (";
-                    $query .= "name, quantity, buy_price, sale_price, categorie_id, media_id, date";
-                    $query .= ") VALUES (";
-                    $query .= " '{$p_name}', '{$p_qty}', '{$p_buy}', '{$p_sale}', '{$p_cat}', '{$media_id}', '{$date}'";
-                    $query .= ")";
-                    $query .= " ON DUPLICATE KEY UPDATE name='{$p_name}'";
-
-                    if ($db->query($query)) {
-                        echo json_encode([
-                            'status' => 200,
-                            'message' => 'Product added successfully!'
-                        ]);
-                    } else {
-                        echo json_encode([
-                            'status' => 400,
-                            'message' => 'Failed to add product. Please try again.'
-                        ]);
-                    }
-                } else {
-                    echo json_encode([
-                        'status' => 400,
-                        'message' => implode(', ', $errors)
-                    ]);
-                }
-                exit;
-            }else if ($_POST['requestType'] == 'update_product') {
-                $req_fields = array('product-id', 'product-title', 'product-categorie', 'product-quantity', 'buying-price', 'selling-price');
-                validate_fields($req_fields);
-
-                if (empty($errors)) {
-                    $p_id   = (int)$_POST['product-id'];
-                    $p_name = remove_junk($db->escape($_POST['product-title']));
-                    $p_cat  = (int)$_POST['product-categorie'];
-                    $p_qty  = remove_junk($db->escape($_POST['product-quantity']));
-                    $p_buy  = remove_junk($db->escape($_POST['buying-price']));
-                    $p_sale = remove_junk($db->escape($_POST['selling-price']));
-
-                    // Handle optional product photo
-                    if (empty($_POST['product-photo'])) {
-                        $media_id = 0;
-                    } else {
-                        $media_id = remove_junk($db->escape($_POST['product-photo']));
-                    }
-
-                    $query  = "UPDATE products SET ";
-                    $query .= "name='{$p_name}', ";
-                    $query .= "quantity='{$p_qty}', ";
-                    $query .= "buy_price='{$p_buy}', ";
-                    $query .= "sale_price='{$p_sale}', ";
-                    $query .= "categorie_id='{$p_cat}', ";
-                    $query .= "media_id='{$media_id}' ";
-                    $query .= "WHERE id='{$p_id}'";
-
-                    $result = $db->query($query);
-
-                    if ($result && $db->affected_rows() >= 0) {
-                        echo json_encode([
-                            'status' => 200,
-                            'message' => 'Product updated successfully!'
-                        ]);
-                    } else {
-                        echo json_encode([
-                            'status' => 400,
-                            'message' => 'No changes made or update failed.'
-                        ]);
-                    }
-                } else {
-                    echo json_encode([
-                        'status' => 400,
-                        'message' => implode(', ', $errors)
-                    ]);
-                }
-
-                exit;
-            }
+        }
 
 
 
