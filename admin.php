@@ -1,7 +1,7 @@
 <?php
   $page_title = 'Admin Home Page';
   require_once('includes/load.php');
-  page_require_level(1);
+  // page_require_level(1);
 
   $c_categorie     = count_by_id('categories');
   $c_product       = count_by_id('products');
