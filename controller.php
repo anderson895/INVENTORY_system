@@ -135,7 +135,37 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode(['status' => 500, 'message' => 'Failed to update user.']);
         }
         exit;
-    }
+    }else if ($_POST['requestType'] == 'update_categorie') {
+            $req_fields = array('categorie-name', 'id');
+            validate_fields($req_fields);
+
+            $cat_name = remove_junk($db->escape($_POST['categorie-name']));
+            $cat_id   = (int)$_POST['id'];
+
+            if (empty($errors)) {
+                $sql = "UPDATE categories SET name = '{$cat_name}' WHERE id = '{$cat_id}' LIMIT 1";
+                $result = $db->query($sql);
+
+                if ($result && $db->affected_rows() === 1) {
+                    echo json_encode([
+                        'status' => 200,
+                        'message' => 'Successfully updated category.'
+                    ]);
+                } else {
+                    echo json_encode([
+                        'status' => 400,
+                        'message' => 'No changes made or update failed.'
+                    ]);
+                }
+            } else {
+                echo json_encode([
+                    'status' => 400,
+                    'message' => $errors
+                ]);
+            }
+            exit;
+        }
+
 
 
     /* ==================== INVALID TYPE ==================== */
