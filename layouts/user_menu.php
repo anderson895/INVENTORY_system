@@ -5,7 +5,7 @@
       <span>Dashboard</span>
     </a>
   </li>
-  <li>
+  <!-- <li>
     <a href="#" class="submenu-toggle">
       <i class="glyphicon glyphicon-th-list"></i>
        <span>Sales</span>
@@ -14,7 +14,14 @@
          <li><a href="sales.php">Manage Sales</a> </li>
          <li><a href="add_sale.php">Add Sale</a> </li>
      </ul>
+  </li> -->
+  <li>
+    <a href="sales.php" >
+      <i class="glyphicon glyphicon-th-list"></i>
+      <span>Manage Sales</span>
+    </a>
   </li>
+  
   <li>
     <a href="#" class="submenu-toggle">
       <i class="glyphicon glyphicon-signal"></i>

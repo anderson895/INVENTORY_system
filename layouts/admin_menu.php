@@ -34,7 +34,7 @@
 
    <li>
     <a href="product.php" >
-      <i class="glyphicon glyphicon-picture"></i>
+       <i class="glyphicon glyphicon-th-large"></i>
       <span>Manage Products</span>
     </a>
   </li>

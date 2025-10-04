@@ -308,7 +308,47 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 ]);
             }
             exit;
-        }
+        }else if ($_POST['requestType'] === 'add_sale') {
+                $req_fields = array('s_id', 'quantity', 'price', 'total', 'date');
+                validate_fields($req_fields);
+
+                if (empty($errors)) {
+                    // Sanitize inputs
+                    $p_id    = (int) $db->escape($_POST['s_id']);
+                    $s_qty   = (int) $db->escape($_POST['quantity']);
+                    $s_price = (float) $db->escape($_POST['price']);
+                    $s_total = (float) $db->escape($_POST['total']);
+                    $date    = $db->escape($_POST['date']);
+                    $s_date  = make_date(); // Current timestamp
+
+                    // Insert into sales table
+                    $sql  = "INSERT INTO sales (product_id, qty, price, date) VALUES (
+                                '{$p_id}', '{$s_qty}', '{$s_total}', '{$s_date}'
+                            )";
+
+                    if ($db->query($sql)) {
+                        // Update product quantity
+                        update_product_qty($s_qty, $p_id);
+
+                        echo json_encode([
+                            'status' => 200,
+                            'message' => "Sale added successfully."
+                        ]);
+                    } else {
+                        echo json_encode([
+                            'status' => 500,
+                            'message' => "Sorry, failed to add sale."
+                        ]);
+                    }
+                } else {
+                    echo json_encode([
+                        'status' => 422,
+                        'message' => implode(", ", $errors)
+                    ]);
+                }
+                exit; // Stop further execution
+            }
+
 
 
 
