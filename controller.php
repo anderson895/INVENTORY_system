@@ -347,6 +347,74 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ]);
                 }
                 exit; // Stop further execution
+            }else if ($_POST['requestType'] == 'add_user') {
+                    $name = remove_junk($db->escape($_POST['full-name']));
+                    $username = remove_junk($db->escape($_POST['username']));
+                    $email = remove_junk($db->escape($_POST['email']));
+                    $password = sha1($_POST['password']);
+                    $level = (int)$db->escape($_POST['level']);
+
+                    
+
+                    $sql = "INSERT INTO users (name, username,email, password, user_level, status)
+                            VALUES ('{$name}','{$username}','{$email}','{$password}','{$level}','1')";
+                    if ($db->query($sql)) {
+                        echo json_encode(['status' => 200, 'message' => 'User added successfully!']);
+                    } else {
+                        echo json_encode(['status' => 500, 'message' => 'Failed to add user.']);
+                    }
+                    exit;
+            }else if ($_POST['requestType'] == 'update_sale') {
+                    // Get sale ID from POST
+                        $sale_id = (int)$_POST['sale_id'];
+
+                        // Find sale in DB
+                        $sale = find_by_id('sales', $sale_id);
+                        if (!$sale) {
+                            echo json_encode(['status'=>'error','msg'=>'Sale not found.']);
+                            exit;
+                        }
+
+                        // Find product in DB
+                        $product = find_by_id('products', $sale['product_id']);
+                        if (!$product) {
+                            echo json_encode(['status'=>'error','msg'=>'Product not found.']);
+                            exit;
+                        }
+
+                        // Validate fields
+                        $req_fields = array('title','quantity','price','total','date');
+                        validate_fields($req_fields);
+
+                        if (!empty($errors)) {
+                            echo json_encode(['status'=>'error','msg'=>implode(', ',$errors)]);
+                            exit;
+                        }
+
+                        // Sanitize POST data
+                        $p_id    = (int)$product['id'];
+                        $s_qty   = (int)$_POST['quantity'];
+                        $s_total = $db->escape($_POST['total']);
+                        $date    = $db->escape($_POST['date']);
+                        $s_date  = date("Y-m-d", strtotime($date));
+
+                        // Update sale
+                        $sql  = "UPDATE sales SET ";
+                        $sql .= "product_id='{$p_id}', qty={$s_qty}, price='{$s_total}', date='{$s_date}' ";
+                        $sql .= "WHERE id='{$sale_id}'";
+                        $result = $db->query($sql);
+
+                        if ($result) {
+                            // Update product stock (adjust by difference)
+                            $old_qty = $sale['qty'];
+                            $diff = $s_qty - $old_qty;
+                            update_product_qty($diff, $p_id);
+
+                            echo json_encode(['status'=>'success','msg'=>'Sale updated successfully.']);
+                        } else {
+                            echo json_encode(['status'=>'error','msg'=>'Failed to update sale.']);
+                        }
+                        exit;
             }
 
 
@@ -383,6 +451,23 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     'product' => $product,
                     'all_categories' => $all_categories,
                     'all_photo' => $all_photo
+                ]);
+            } else {
+                echo json_encode([
+                    'status' => 404,
+                    'message' => 'Product not found.'
+                ]);
+            }
+            exit;
+        }else if ($_GET['requestType'] == 'get_sales' && isset($_GET['id'])) {
+            $sale = find_by_id('sales',(int)$_GET['id']);
+            $product = find_by_id('products',$sale['product_id']); 
+            
+            if ($product) {
+                echo json_encode([
+                    'status' => 200,
+                    'product' => $product,
+                    'sale' => $sale
                 ]);
             } else {
                 echo json_encode([

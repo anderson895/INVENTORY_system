@@ -11,7 +11,8 @@ if(!$sale){
   redirect('sales.php');
 }
 ?>
-<?php $product = find_by_id('products',$sale['product_id']); ?>
+<?php 
+$product = find_by_id('products',$sale['product_id']); ?>
 <?php
 
   if(isset($_POST['update_sale'])){

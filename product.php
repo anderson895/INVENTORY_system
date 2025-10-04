@@ -323,7 +323,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="qrModalLabel">QR Code</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        
       </div>
       <div class="modal-body text-center">
         <img src="" id="qrModalImage" style="max-width:100%; height:auto;">
@@ -356,13 +356,11 @@ $(document).ready(function() {
 
 
 
-$(document).ready(function() {
-    $('.qr-thumbnail').on('click', function() {
-        var qrSrc = $(this).data('qr'); // Get QR path
-        $('#qrModalImage').attr('src', qrSrc); // Set image in modal
-        $('#qrModal').modal('show'); // Show modal
+ $(document).on('click', '.qr-thumbnail', function() {
+        var qrSrc = $(this).data('qr');          // Get QR image path
+        $('#qrModalImage').attr('src', qrSrc);   // Set the modal image src
+        $('#qrModal').modal('show');             // Show the modal
     });
-});
 
 
 
