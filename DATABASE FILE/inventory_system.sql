@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 04, 2025 at 01:34 PM
+-- Generation Time: Oct 04, 2025 at 03:16 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -78,18 +78,18 @@ CREATE TABLE `products` (
 --
 
 INSERT INTO `products` (`id`, `name`, `quantity`, `buy_price`, `sale_price`, `categorie_id`, `media_id`, `date`) VALUES
-(2, 'Box Varieties', '12000', 55.00, 130.00, 4, 0, '2021-04-04 18:44:52'),
+(2, 'Box Varieties', '11999', 55.00, 130.00, 4, 0, '2021-04-04 18:44:52'),
 (3, 'Wheat', '69', 2.00, 5.00, 2, 0, '2021-04-04 18:48:53'),
 (4, 'Timber', '1200', 780.00, 1069.00, 2, 0, '2021-04-04 19:03:23'),
 (5, 'W1848 Oscillating Floor Drill Press', '26', 299.00, 494.00, 5, 0, '2021-04-04 19:11:30'),
 (6, 'Portable Band Saw XBP02Z', '42', 280.00, 415.00, 5, 0, '2021-04-04 19:13:35'),
 (7, 'Life Breakfast Cereal-3 Pk', '107', 3.00, 7.00, 3, 0, '2021-04-04 19:15:38'),
 (8, 'Chicken of the Sea Sardines W', '110', 13.00, 20.00, 3, 0, '2021-04-04 19:17:11'),
-(9, 'Disney Woody - Action Figure', '67', 29.00, 55.00, 3, 0, '2021-04-04 19:19:20'),
-(10, 'Hasbro Marvel Legends Series Toys', '106', 219.00, 322.00, 3, 0, '2021-04-04 19:20:28'),
+(9, 'Disney Woody - Action Figure', '66', 29.00, 55.00, 3, 0, '2021-04-04 19:19:20'),
+(10, 'Hasbro Marvel Legends Series Toys', '104', 219.00, 322.00, 3, 0, '2021-04-04 19:20:28'),
 (11, 'Packing Chips', '78', 21.00, 31.00, 4, 0, '2021-04-04 19:25:22'),
 (12, 'Classic Desktop Tape Dispenser 38', '160', 5.00, 10.00, 8, 0, '2021-04-04 19:48:01'),
-(13, 'Small Bubble Cushioning Wrap', '199', 8.00, 19.00, 4, 0, '2021-04-04 19:49:00'),
+(13, 'Small Bubble Cushioning Wrap', '193', 8.00, 19.00, 4, 0, '2021-04-04 19:49:00'),
 (28, 'test product', '100', 50.00, 100.00, 4, 0, '2025-10-04 13:24:45');
 
 -- --------------------------------------------------------
@@ -117,7 +117,13 @@ INSERT INTO `sales` (`id`, `product_id`, `qty`, `price`, `date`) VALUES
 (5, 12, 5, 50.00, '2021-04-04'),
 (6, 13, 21, 399.00, '2021-04-04'),
 (7, 7, 5, 35.00, '2021-04-04'),
-(8, 9, 2, 110.00, '2021-04-04');
+(8, 9, 2, 110.00, '2021-04-04'),
+(9, 2, 1, 130.00, '2025-10-04'),
+(10, 10, 1, 322.00, '2025-10-04'),
+(11, 13, 1, 19.00, '2025-10-04'),
+(12, 10, 1, 322.00, '2025-10-04'),
+(13, 9, 1, 55.00, '2025-10-04'),
+(14, 13, 5, 95.00, '2025-10-04');
 
 -- --------------------------------------------------------
 
@@ -132,22 +138,22 @@ CREATE TABLE `users` (
   `username` varchar(50) NOT NULL,
   `password` varchar(255) NOT NULL,
   `user_level` int(11) NOT NULL,
-  `image` varchar(255) DEFAULT 'no_image.jpg',
+  `image` varchar(255) DEFAULT 'no_image.png',
   `status` int(1) NOT NULL,
-  `last_login` datetime DEFAULT NULL
+  `last_login` datetime DEFAULT NULL,
+  `verification_number` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1 COLLATE=latin1_swedish_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `username`, `password`, `user_level`, `image`, `status`, `last_login`) VALUES
-(1, 'Harry Denn', '', 'admin', 'd033e22ae348aeb5660fc2140aec35850c4da997', 1, 'no_image.png', 1, '2025-10-04 07:51:48'),
-(2, 'John Walkerss', '', 'special', 'ba36b97a41e7faf742ab09bf88405ac04f99599a', 2, 'no_image.png', 1, '2025-10-04 03:01:03'),
-(3, 'Christophers', '', 'user', '12dea96fec20593566ab75692c9949596833adc9', 3, 'no_image.png', 1, '2025-10-04 03:02:07'),
-(5, 'Kevin', '', 'kevin', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 3, 'no_image.png', 1, '2021-04-04 19:54:29'),
-(6, 'joshua padilla', '', 'joshua padilla', '$2y$10$dgmLWMy040zKJNNHknveW.dWt4vvUZsRNJPAWtMmVTgR2iAAWIHvW', 1, 'no_image.jpg', 1, NULL),
-(7, 'andy anderson', 'andersonandy046@gmail.com', 'joshuapadilla', '$2y$10$QLtKNJPv8PtxF/1oFmjNAeHkLJTKPyNm4as2Evc5ke462lTBjnjH6', 3, 'no_image.jpg', 1, NULL);
+INSERT INTO `users` (`id`, `name`, `email`, `username`, `password`, `user_level`, `image`, `status`, `last_login`, `verification_number`) VALUES
+(1, 'Harry Denn', '', 'admin', 'd033e22ae348aeb5660fc2140aec35850c4da997', 1, 'no_image.png', 1, '2025-10-04 15:14:29', NULL),
+(2, 'John Walkerss', '', 'special', 'ba36b97a41e7faf742ab09bf88405ac04f99599a', 2, 'no_image.png', 1, '2025-10-04 14:09:44', NULL),
+(3, 'Christophers', '', 'user', '12dea96fec20593566ab75692c9949596833adc9', 3, 'no_image.png', 1, '2025-10-04 15:07:00', NULL),
+(5, 'Kevin', '', 'kevin', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 3, 'no_image.png', 1, '2021-04-04 19:54:29', NULL),
+(7, 'andy anderson', 'andersonandy046@gmail.com', 'joshuapadilla', '8cb2237d0679ca88db6464eac60da96345513964', 3, 'no_image.png', 1, '2025-10-04 15:14:39', NULL);
 
 -- --------------------------------------------------------
 
@@ -245,7 +251,7 @@ ALTER TABLE `products`
 -- AUTO_INCREMENT for table `sales`
 --
 ALTER TABLE `sales`
-  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(11) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT for table `users`
