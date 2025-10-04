@@ -24,7 +24,7 @@
           </strong>
         </div>
         <div class="panel-body">
-          <table class="table table-bordered table-striped">
+          <table id="datatable" class="table table-bordered table-striped">
             <thead>
               <tr>
                 <th class="text-center" style="width: 50px;">#</th>
@@ -52,3 +52,11 @@
   </div>
 
 <?php include_once('layouts/footer.php'); ?>
+
+
+<script>
+$(document).ready(function() {
+    $('#datatable').DataTable();
+});
+
+</script>
