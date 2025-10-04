@@ -21,7 +21,7 @@ Password: user
 
 
 REVISIONS
-• Lalagyan ng graph sa dashboard
+✔• Lalagyan ng graph sa dashboard
 • Gagawin modal
 • Lalagyan ng Searching features or sorting 
 • Lalagyan ng forgot password 
