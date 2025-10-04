@@ -25,47 +25,68 @@
         <div class="panel-body">
           <table class="table table-bordered">
             <thead>
-              <tr>
-                <th class="text-center" style="width: 50px;">#</th>
-                <th> Photo</th>
-                <th> Product Title </th>
-                <th class="text-center" style="width: 10%;"> Categories </th>
-                <th class="text-center" style="width: 10%;"> In-Stock </th>
-                <th class="text-center" style="width: 10%;"> Buying Price </th>
-                <th class="text-center" style="width: 10%;"> Selling Price </th>
-                <th class="text-center" style="width: 10%;"> Product Added </th>
-                <th class="text-center" style="width: 100px;"> Actions </th>
-              </tr>
+                <tr>
+                    <th class="text-center" style="width: 50px;">#</th>
+                    <th>Photo</th>
+                    <th>Product Title</th>
+                    <th class="text-center" style="width: 10%;">Categories</th>
+                    <th class="text-center" style="width: 10%;">In-Stock</th>
+                    <th class="text-center" style="width: 10%;">Buying Price</th>
+                    <th class="text-center" style="width: 10%;">Selling Price</th>
+                    <th class="text-center" style="width: 10%;">Product Added</th>
+                    <th class="text-center" style="width: 100px;">QR Code</th> <!-- New QR Code Column -->
+                    <th class="text-center" style="width: 100px;">Actions</th>
+                </tr>
             </thead>
             <tbody>
-              <?php foreach ($products as $product):?>
-              <tr>
-                <td class="text-center"><?php echo count_id();?></td>
-                <td>
-                  <?php if($product['media_id'] === '0'): ?>
-                    <img class="img-avatar img-circle" src="uploads/products/no_image.png" alt="">
-                  <?php else: ?>
-                  <img class="img-avatar img-circle" src="uploads/products/<?php echo $product['image']; ?>" alt="">
-                <?php endif; ?>
-                </td>
-                <td> <?php echo remove_junk($product['name']); ?></td>
-                <td class="text-center"> <?php echo remove_junk($product['categorie']); ?></td>
-                <td class="text-center"> <?php echo remove_junk($product['quantity']); ?></td>
-                <td class="text-center"> <?php echo remove_junk($product['buy_price']); ?></td>
-                <td class="text-center"> <?php echo remove_junk($product['sale_price']); ?></td>
-                <td class="text-center"> <?php echo read_date($product['date']); ?></td>
-                <td class="text-center">
-                  <div class="btn-group">
-                    <button class="btn btn-xs btn-warning btn-edit" data-id="<?= $product['id']; ?>"><i class="glyphicon glyphicon-pencil"></i></button>
-                    <a href="delete_product.php?id=<?php echo (int)$product['id'];?>" class="btn btn-danger btn-xs"  title="Delete" data-toggle="tooltip">
-                      <span class="glyphicon glyphicon-trash"></span>
-                    </a>
-                  </div>
-                </td>
-              </tr>
-             <?php endforeach; ?>
+                <?php foreach ($products as $product): ?>
+                <tr>
+                    <td class="text-center"><?php echo count_id(); ?></td>
+                    <td>
+                        <?php if($product['media_id'] === '0'): ?>
+                            <img class="img-avatar img-circle" src="uploads/products/no_image.png" alt="">
+                        <?php else: ?>
+                            <img class="img-avatar img-circle" src="uploads/products/<?php echo $product['image']; ?>" alt="">
+                        <?php endif; ?>
+                    </td>
+                    <td><?php echo remove_junk($product['name']); ?></td>
+                    <td class="text-center"><?php echo remove_junk($product['categorie']); ?></td>
+                    <td class="text-center"><?php echo remove_junk($product['quantity']); ?></td>
+                    <td class="text-center"><?php echo remove_junk($product['buy_price']); ?></td>
+                    <td class="text-center"><?php echo remove_junk($product['sale_price']); ?></td>
+                    <td class="text-center"><?php echo read_date($product['date']); ?></td>
+                    <td class="text-center"> <!-- QR Code -->
+                        <?php
+                        $qrPath = 'qr_codes/' . $product['id'] . '.png';
+                        if (file_exists($qrPath)):
+                        ?>
+                            <img 
+                                src="<?php echo $qrPath; ?>" 
+                                alt="QR Code" 
+                                class="qr-thumbnail" 
+                                style="width:50px; height:50px; cursor:pointer;"
+                                data-qr="<?php echo $qrPath; ?>"
+                            >
+                        <?php else: ?>
+                            <span class="text-muted">N/A</span>
+                        <?php endif; ?>
+                    </td>
+
+                    <td class="text-center">
+                        <div class="btn-group">
+                            <button class="btn btn-xs btn-warning btn-edit" data-id="<?= $product['id']; ?>">
+                                <i class="glyphicon glyphicon-pencil"></i>
+                            </button>
+                            <a href="delete_product.php?id=<?php echo (int)$product['id'];?>" class="btn btn-danger btn-xs" title="Delete" data-toggle="tooltip">
+                                <span class="glyphicon glyphicon-trash"></span>
+                            </a>
+                        </div>
+                    </td>
+                </tr>
+                <?php endforeach; ?>
             </tbody>
-          </tabel>
+        </table>
+
         </div>
       </div>
     </div>
@@ -290,10 +311,46 @@
 
 
 
+
+<!-- QR Modal -->
+<div class="modal fade" id="qrModal" tabindex="-1" aria-labelledby="qrModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="qrModalLabel">QR Code</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img src="" id="qrModalImage" style="max-width:100%; height:auto;">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
   <?php include_once('layouts/footer.php'); ?>
 
 
   <script>
+
+
+$(document).ready(function() {
+    $('.qr-thumbnail').on('click', function() {
+        var qrSrc = $(this).data('qr'); // Get QR path
+        $('#qrModalImage').attr('src', qrSrc); // Set image in modal
+        $('#qrModal').modal('show'); // Show modal
+    });
+});
+
+
+
+
+
     /* ==================== ADD PRODUCT ==================== */
 $('#frmAddProduct').on('submit', function(e) {
   e.preventDefault();
