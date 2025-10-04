@@ -22,10 +22,10 @@ Password: user
 
 REVISIONS
 ✔• Lalagyan ng graph sa dashboard
-• Gagawin modal
-• Lalagyan ng Searching features or sorting 
+✔• Gagawin modal
+✔• Lalagyan ng Searching features or sorting 
 • Lalagyan ng forgot password 
-• lalagyan ng aumated QRcode
+✔• lalagyan ng aumated QRcode
 
 
 
