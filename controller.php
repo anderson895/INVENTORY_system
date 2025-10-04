@@ -247,7 +247,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $name = remove_junk($db->escape($_POST['full-name']));
         $username = remove_junk($db->escape($_POST['username']));
         $email = remove_junk($db->escape($_POST['email']));
-        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+        $password = sha1($_POST['password']);
         $level = (int)$db->escape($_POST['level']);
 
         

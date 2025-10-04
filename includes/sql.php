@@ -147,6 +147,20 @@ function tableExists($table){
       $result = find_by_sql($sql);
       return $result;
   }
+
+
+
+
+
+  function find_by_email($table, $email){
+      global $db;
+      $sql  = "SELECT * FROM ".$table." WHERE email='".(string)$db->escape($email)."' LIMIT 1";
+      $result = $db->query($sql);
+      return $db->fetch_assoc($result);
+  }
+
+
+
   /*--------------------------------------------------------------*/
   /* Function to update the last log in of a user
   /*--------------------------------------------------------------*/

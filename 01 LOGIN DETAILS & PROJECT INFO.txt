@@ -33,3 +33,4 @@ REVISIONS
 
 Requirements
 -composer require endroid/qr-code
+-composer require phpmailer/phpmailer
