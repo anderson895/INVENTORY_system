@@ -22,7 +22,7 @@ include_once('layouts/header.php');
       </div>
 
       <div class="panel-body">
-        <table class="table table-bordered table-striped" id="userTable">
+        <table id="datatable" class="table table-bordered table-striped" id="userTable">
           <thead>
             <tr>
               <th class="text-center">#</th>
@@ -166,6 +166,18 @@ include_once('layouts/header.php');
 <?php include_once('layouts/footer.php'); ?>
 
 <script>
+
+$(document).ready(function() {
+    $('#datatable').DataTable({
+        "order": [[ 0, "asc" ]], // Default sort by first column
+        "columnDefs": [
+            { "orderable": false, "targets": [7] } // Disable sorting on Photo, QR, Actions
+        ]
+    });
+});
+
+
+
 /* ==================== ADD USER ==================== */
 $('#frmAddUser').on('submit', function(e) {
   e.preventDefault();

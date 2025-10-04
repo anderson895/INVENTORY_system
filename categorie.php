@@ -62,7 +62,7 @@
        </strong>
       </div>
         <div class="panel-body">
-          <table class="table table-bordered table-striped table-hover">
+          <table id="datatable" class="table table-bordered table-striped table-hover">
             <thead>
                 <tr>
                     <th class="text-center" style="width: 50px;">#</th>
@@ -148,6 +148,19 @@
   <?php include_once('layouts/footer.php'); ?>
 
 <script>
+
+
+$(document).ready(function() {
+    $('#datatable').DataTable({
+        "order": [[ 0, "asc" ]], // Default sort by first column
+        "columnDefs": [
+            { "orderable": false, "targets": [2] } // Disable sorting on Photo, QR, Actions
+        ]
+    });
+});
+
+
+
   // When clicking edit button
 $(document).on('click', '.btn-edit-cat', function() {
   const id = $(this).data('id');

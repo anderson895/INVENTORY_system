@@ -23,7 +23,7 @@
          </div>
         </div>
         <div class="panel-body">
-          <table class="table table-bordered">
+          <table id="productTable" class="table table-bordered">
             <thead>
                 <tr>
                     <th class="text-center" style="width: 50px;">#</th>
@@ -92,6 +92,11 @@
     </div>
   </div>
 
+
+
+
+
+  
 
 
 
@@ -335,8 +340,20 @@
 
   <?php include_once('layouts/footer.php'); ?>
 
+<script>
 
-  <script>
+
+$(document).ready(function() {
+    $('#productTable').DataTable({
+        "order": [[ 0, "asc" ]], // Default sort by first column
+        "columnDefs": [
+            { "orderable": false, "targets": [1, 8, 9] } // Disable sorting on Photo, QR, Actions
+        ]
+    });
+});
+
+
+
 
 
 $(document).ready(function() {

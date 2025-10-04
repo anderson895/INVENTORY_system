@@ -28,7 +28,7 @@
 
       <div class="panel-body">
         <div class="table-responsive">
-          <table class="table table-bordered">
+          <table id="datatable" class="table table-bordered">
             <thead>
               <tr>
                 <th class="text-center" style="width: 50px;">#</th>
@@ -163,8 +163,19 @@
 </div>
 
 <script>
-$(document).ready(function() {
 
+$(document).ready(function() {
+    $('#datatable').DataTable({
+        "order": [[ 0, "asc" ]], // Default sort by first column
+        "columnDefs": [
+            { "orderable": false, "targets": [3, 4] } // Disable sorting on Photo, QR, Actions
+        ]
+    });
+});
+
+
+
+$(document).ready(function() {
   /* ================= ADD GROUP ================= */
 $('#frmAdd_group').on('submit', function(e) {
   e.preventDefault();
