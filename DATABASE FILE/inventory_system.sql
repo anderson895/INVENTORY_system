@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Oct 04, 2025 at 03:16 PM
+-- Generation Time: Oct 04, 2025 at 03:19 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -153,7 +153,7 @@ INSERT INTO `users` (`id`, `name`, `email`, `username`, `password`, `user_level`
 (2, 'John Walkerss', '', 'special', 'ba36b97a41e7faf742ab09bf88405ac04f99599a', 2, 'no_image.png', 1, '2025-10-04 14:09:44', NULL),
 (3, 'Christophers', '', 'user', '12dea96fec20593566ab75692c9949596833adc9', 3, 'no_image.png', 1, '2025-10-04 15:07:00', NULL),
 (5, 'Kevin', '', 'kevin', '5baa61e4c9b93f3f0682250b6cf8331b7ee68fd8', 3, 'no_image.png', 1, '2021-04-04 19:54:29', NULL),
-(7, 'andy anderson', 'andersonandy046@gmail.com', 'joshuapadilla', '8cb2237d0679ca88db6464eac60da96345513964', 3, 'no_image.png', 1, '2025-10-04 15:14:39', NULL);
+(7, 'andy anderson', 'andersonandy046@gmail.com', 'joshuapadilla', '8cb2237d0679ca88db6464eac60da96345513964', 3, 'it7amhmb7.png', 1, '2025-10-04 15:14:39', NULL);
 
 -- --------------------------------------------------------
 
