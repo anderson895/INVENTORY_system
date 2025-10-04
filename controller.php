@@ -99,15 +99,68 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             echo json_encode(['status' => 500, 'message' => 'Failed to update group.']);
         }
         exit;
+    }else if ($_POST['requestType'] == 'add_user') {
+        $name = remove_junk($db->escape($_POST['full-name']));
+        $username = remove_junk($db->escape($_POST['username']));
+        $email = remove_junk($db->escape($_POST['email']));
+        $password = password_hash($_POST['password'], PASSWORD_DEFAULT);
+        $level = (int)$db->escape($_POST['level']);
+
+        
+
+        $sql = "INSERT INTO users (name, username,email, password, user_level, status)
+                VALUES ('{$name}','{$username}','{$email}','{$password}','{$level}','1')";
+        if ($db->query($sql)) {
+            echo json_encode(['status' => 200, 'message' => 'User added successfully!']);
+        } else {
+            echo json_encode(['status' => 500, 'message' => 'Failed to add user.']);
+        }
+        exit;
+    }else if ($_POST['requestType'] == 'update_user') {
+        $id = (int)$_POST['user_id'];
+        $name = remove_junk($db->escape($_POST['name']));
+        $username = remove_junk($db->escape($_POST['username']));
+        $email = remove_junk($db->escape($_POST['email']));
+        $level = (int)$db->escape($_POST['level']);
+        $status = (int)$db->escape($_POST['status']);
+
+        $sql = "UPDATE users SET 
+                name='{$name}', username='{$username}', email='{$email}', 
+                user_level='{$level}', status='{$status}' 
+                WHERE id='{$id}'";
+
+        if ($db->query($sql)) {
+            echo json_encode(['status' => 200, 'message' => 'User updated successfully!']);
+        } else {
+            echo json_encode(['status' => 500, 'message' => 'Failed to update user.']);
+        }
+        exit;
     }
+
 
     /* ==================== INVALID TYPE ==================== */
     else {
         echo json_encode(['status' => 400, 'message' => 'Invalid request type.']);
         exit;
     }
-} else {
-    echo json_encode(['status' => 403, 'message' => 'Access denied.']);
-    exit;
+} else if ($_SERVER['REQUEST_METHOD'] === 'GET') {
+
+   if (isset($_GET['requestType']))
+    {
+        if ($_GET['requestType'] == 'get_user' && isset($_GET['id'])) {
+            $id = (int)$_GET['id'];
+            $user = find_by_id('users', $id);
+            if ($user) {
+                echo json_encode(['status' => 200, 'user' => $user]);
+            } else {
+                echo json_encode(['status' => 404, 'message' => 'User not found.']);
+            }
+            exit;
+        }else{
+            echo "404";
+        }
+    }else {
+        echo 'No GET REQUEST';
+    }
 }
 ?>

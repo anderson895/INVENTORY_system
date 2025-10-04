@@ -1,7 +1,7 @@
 <?php
   $page_title = 'All Group';
   require_once('includes/load.php');
-  page_require_level(1);
+  // page_require_level(1);
   $all_groups = find_all('user_groups');
 ?>
 <?php include_once('layouts/header.php'); ?>
