@@ -42,14 +42,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $query .= "VALUES ('{$p_name}', '{$p_qty}', '{$p_buy}', '{$p_sale}', '{$p_cat}', '{$media_id}', '{$date}')";
 
             if ($db->query($query)) {
-                $product_id = $db->insert_id();
+               $product_id = $db->insert_id();
 
                 // --- Generate QR code (Endroid v6) using named arguments ---
                 $qrDir = __DIR__ . '/qr_codes/';
                 if (!is_dir($qrDir)) mkdir($qrDir, 0755, true);
 
+                // The URL to encode in the QR code
+                $qrData = "http://localhost/InventorySystem_PHP/view_product.php?product_id={$product_id}";
+
                 $qrCode = new QrCode(
-                    data: (string)$product_id,
+                    data: $qrData, // <-- use the URL here
                     encoding: new Encoding('UTF-8'),
                     errorCorrectionLevel: ErrorCorrectionLevel::High,
                     size: 300,
@@ -110,8 +113,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         $qrPath = $qrDir . $p_id . '.png';
 
+                        // URL to encode in the QR code
+                        $qrData = "http://localhost/InventorySystem_PHP/view_product.php?product_id={$p_id}";
+
                         $qrCode = new QrCode(
-                            data: (string)$p_id,
+                            data: $qrData, // <-- use the URL here
                             encoding: new Encoding('UTF-8'),
                             errorCorrectionLevel: ErrorCorrectionLevel::High,
                             size: 300,
@@ -126,6 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
                         // Save QR code (overwrite if exists)
                         $resultQR->saveToFile($qrPath);
+
 
                         echo json_encode([
                             'status' => 200,
